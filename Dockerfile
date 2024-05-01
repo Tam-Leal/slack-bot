@@ -1,18 +1,23 @@
-# Usar uma imagem base oficial do Python
-FROM python:3.9-slim
+# Dockerfile
 
-# Definir o diretório de trabalho no container
+FROM python:3.11-slim
+
 WORKDIR /app
 
-# Copiar o arquivo de requerimentos e instalar as dependências
-COPY requirements.txt ./requirements.txt
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    software-properties-common \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copiar os arquivos restantes do projeto para o container
 COPY . .
 
-# Expõe a porta 8501, usada pelo Streamlit
+RUN pip3 install -r requirements.txt
+RUN pip3 install -U python-dotenv
+
 EXPOSE 8501
 
-# Comando para rodar a aplicação
-CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+
+ENTRYPOINT ["streamlit", "run", "main.py", "--server.enableWebsocketCompression=false", "--server.enableCORS=false", "--server.port=8501", "--server.address=0.0.0.0"]
