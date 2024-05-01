@@ -1,9 +1,12 @@
 # Dockerfile
 
+# Use a specific version of the Python image from Docker Hub
 FROM python:3.11-slim
 
+# Define the working directory inside the container
 WORKDIR /app
 
+# Install necessary packages
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
@@ -11,13 +14,18 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy the local code to the container
 COPY . .
 
+# Install dependencies from requirements file
 RUN pip3 install -r requirements.txt
 RUN pip3 install -U python-dotenv
 
-EXPOSE 8501
+# Expose the port Streamlit runs on
+EXPOSE $PORT
 
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+# Health check command to ensure the app is running
+HEALTHCHECK CMD curl --fail http://localhost:$PORT/_stcore/health || exit 1
 
-ENTRYPOINT ["streamlit", "run", "main.py", "--server.enableWebsocketCompression=false", "--server.enableCORS=false", "--server.port=8501", "--server.address=0.0.0.0"]
+# Command to run the Streamlit application
+ENTRYPOINT ["streamlit", "run", "main.py", "--server.enableWebsocketCompression=false", "--server.enableCORS=true", "--server.enableXsrfProtection=true", "--server.port=${PORT:-8501}", "--server.address=0.0.0.0"]
