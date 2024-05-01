@@ -27,5 +27,5 @@ EXPOSE $PORT
 # Health check command to ensure the app is running
 HEALTHCHECK CMD curl --fail http://localhost:$PORT/_stcore/health || exit 1
 
-# Command to run the Streamlit application
-ENTRYPOINT ["streamlit", "run", "main.py", "--server.enableWebsocketCompression=false", "--server.enableCORS=true", "--server.enableXsrfProtection=true", "--server.port=${PORT:-8501}", "--server.address=0.0.0.0"]
+# Use a shell form of CMD to use variable substitution correctly
+CMD streamlit run main.py --server.enableWebsocketCompression=false --server.enableCORS=true --server.enableXsrfProtection=true --server.port=${PORT:-8501} --server.address=0.0.0.0
