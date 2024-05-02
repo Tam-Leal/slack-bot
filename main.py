@@ -3,6 +3,11 @@ import csv
 from io import StringIO
 import pandas as pd
 import requests
+from dotenv import load_dotenv
+import os
+
+# Carrega variáveis de ambiente do arquivo .env
+load_dotenv()
 
 def generate_csv_data():
     # Simula dados CSV
@@ -26,8 +31,10 @@ csv_data = generate_csv_data()
 df = pd.read_csv(StringIO(csv_data))
 st.dataframe(df)  # Mostra os dados na interface
 
+
 token = st.sidebar.text_input("Slack Token", type="password")
 channels = st.sidebar.text_input("Channel ID")
+
 
 def upload_file_to_slack(token, channels, file_content, filename):
     url = "https://slack.com/api/files.upload"
