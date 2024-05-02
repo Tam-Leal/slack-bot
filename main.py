@@ -31,10 +31,9 @@ csv_data = generate_csv_data()
 df = pd.read_csv(StringIO(csv_data))
 st.dataframe(df)  # Mostra os dados na interface
 
-
-token = st.sidebar.text_input("Slack Token", type="password")
-channels = st.sidebar.text_input("Channel ID")
-
+# Usa as variáveis de ambiente para os inputs
+token = os.getenv('SLACK_TOKEN')
+channels = os.getenv('CHANNEL_ID')
 
 def upload_file_to_slack(token, channels, file_content, filename):
     url = "https://slack.com/api/files.upload"
