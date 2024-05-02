@@ -7,7 +7,7 @@ import requests
 def generate_csv_data():
     # Simula dados CSV
     data = [["Name", "Age", "Email"],
-            ["Alice", 28, "alice@example.com"],
+            ["Greg", 28, "greg@example.com"],
             ["Bob", 24, "bob@example.com"],
             ["Charlie", 30, "charlie@example.com"]]
 
@@ -28,7 +28,7 @@ def upload_file_to_slack(token, channels, file_content, filename):
         "content": file_content,
         "filename": filename,
         "filetype": "auto",
-        "initial_comment": "Sir, this is a Testing!"
+        "initial_comment": "Sir, here is your file!"
     }
     response = requests.post(url, headers=headers, data=data)
     return response.json()
