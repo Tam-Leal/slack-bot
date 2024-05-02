@@ -1,8 +1,8 @@
 import streamlit as st
 import csv
 from io import StringIO
+import pandas as pd
 import requests
-
 
 def generate_csv_data():
     # Simula dados CSV
@@ -15,8 +15,19 @@ def generate_csv_data():
     output = StringIO()
     writer = csv.writer(output)
     writer.writerows(data)
+    output.seek(0)  # Voltar ao início do stream para leitura
     return output.getvalue()
 
+# Streamlit UI
+st.title('CSV to Slack Uploader')
+
+# Gera e exibe os dados CSV como DataFrame assim que o app inicia
+csv_data = generate_csv_data()
+df = pd.read_csv(StringIO(csv_data))
+st.dataframe(df)  # Mostra os dados na interface
+
+token = st.sidebar.text_input("Slack Token", type="password")
+channels = st.sidebar.text_input("Channel ID")
 
 def upload_file_to_slack(token, channels, file_content, filename):
     url = "https://slack.com/api/files.upload"
@@ -33,17 +44,7 @@ def upload_file_to_slack(token, channels, file_content, filename):
     response = requests.post(url, headers=headers, data=data)
     return response.json()
 
-
-# Streamlit UI
-st.title('CSV to Slack Uploader')
-
-token = st.sidebar.text_input("Slack Token", type="password")
-channels = st.sidebar.text_input("Channel ID")
-
-if st.button('Generate and Upload CSV'):
-    # Gera dados CSV
-    csv_data = generate_csv_data()
-
+if st.button('Upload CSV to Slack'):
     # Upload para Slack
     result = upload_file_to_slack(token, channels, csv_data, "data.csv")
 
